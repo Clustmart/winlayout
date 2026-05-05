@@ -16,7 +16,7 @@ A free, open-source alternative to tools like Moom, Stay, Display Maid, and Bett
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/winlayout.git
+git clone https://github.com/Clustmart/winlayout.git
 cd winlayout
 chmod +x winlayout.sh
 ```
@@ -36,7 +36,7 @@ chmod +x winlayout.sh
 **Restore** it:
 
 ```bash
-./winlayout.sh --restore
+./winlayout.sh -r
 ```
 
 All three flags are equivalent:
