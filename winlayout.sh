@@ -1,9 +1,39 @@
 #!/usr/bin/env bash
 
-# File where layouts are stored
-LAYOUT_FILE="${HOME}/.window-layout.txt"
+LAYOUT_DIR="${HOME}"
+LAYOUT_DEFAULT="${LAYOUT_DIR}/.window-layout.txt"
+
+layout_file() {
+  local name="$1"
+  if [[ -z "$name" ]]; then
+    echo "$LAYOUT_DEFAULT"
+  else
+    echo "${LAYOUT_DIR}/.window-layout-${name}.txt"
+  fi
+}
+
+list_layouts() {
+  local files=("${LAYOUT_DIR}"/.window-layout*.txt)
+  if [[ ! -e "${files[0]}" ]]; then
+    echo "No saved layouts found."
+    return
+  fi
+  echo "Saved layouts:"
+  for f in "${files[@]}"; do
+    local base
+    base="$(basename "$f")"
+    if [[ "$base" == ".window-layout.txt" ]]; then
+      echo "  (default)   $f"
+    else
+      local name="${base#.window-layout-}"
+      name="${name%.txt}"
+      echo "  $name   $f"
+    fi
+  done
+}
 
 save_layout() {
+  local LAYOUT_FILE="$1"
   if command -v swift &>/dev/null; then
     # Fast path: CGWindowListCopyWindowInfo returns all windows in one shot (~0.5s).
     # executableURL.lastPathComponent gives the process name that matches
@@ -66,6 +96,7 @@ APPLESCRIPT
 }
 
 restore_layout() {
+  local LAYOUT_FILE="$1"
   if [[ ! -f "$LAYOUT_FILE" ]]; then
     echo "No layout file at $LAYOUT_FILE" >&2
     exit 1
@@ -183,10 +214,24 @@ APPLESCRIPT
 
 case "$1" in
   -r|--restore|-restore)
-    restore_layout
+    f="$(layout_file "$2")"
+    restore_layout "$f"
+    ;;
+  -s|--save|-save)
+    f="$(layout_file "$2")"
+    save_layout "$f"
+    echo "Layout saved to $f"
+    ;;
+  -l|--list|-list)
+    list_layouts
     ;;
   *)
-    save_layout
-    echo "Layout saved to $LAYOUT_FILE"
+    echo "Usage: $(basename "$0") -s|--save   [name]   Save current window layout"
+    echo "       $(basename "$0") -r|--restore [name]   Restore saved window layout"
+    echo "       $(basename "$0") -l|--list             List all saved layouts"
+    echo ""
+    echo "  name  Optional. Saves/restores ~/.window-layout-<name>.txt"
+    echo "        Omit to use the default layout (~/.window-layout.txt)"
+    exit 0
     ;;
 esac
