@@ -30,7 +30,7 @@ chmod +x winlayout.sh
 **Save** the current layout:
 
 ```bash
-./winlayout.sh
+./winlayout.sh -s
 ```
 
 **Restore** it:
@@ -39,15 +39,36 @@ chmod +x winlayout.sh
 ./winlayout.sh -r
 ```
 
-All three flags are equivalent:
+**List** all saved layouts:
 
 ```bash
-./winlayout.sh --restore
-./winlayout.sh -r
-./winlayout.sh -restore
+./winlayout.sh -l
 ```
 
-Layout is saved to `~/.window-layout.txt`.
+Running the script without arguments prints a usage summary.
+
+All flag variants are equivalent:
+
+```bash
+./winlayout.sh --save      # same as -s
+./winlayout.sh --restore   # same as -r
+./winlayout.sh --list      # same as -l
+```
+
+Layout is saved to `~/.window-layout.txt` by default.
+
+### Named layouts
+
+Pass an optional name to save and restore independent layouts — useful when you switch between different monitor setups or workflows:
+
+```bash
+./winlayout.sh -s work          # saves to ~/.window-layout-work.txt
+./winlayout.sh -s home          # saves to ~/.window-layout-home.txt
+./winlayout.sh -r work          # restores the work layout
+./winlayout.sh -l               # lists all saved layouts
+```
+
+Omitting the name always uses the default `~/.window-layout.txt`.
 
 **Optional — make it available system-wide:**
 
@@ -85,7 +106,7 @@ Press the key and all windows snap back to their saved positions.
 
 A nice touch: the Apple Extended Keyboard has dedicated function keys (F13–F19) that no app uses by default — assigning restore to **F19** gives you a one-key shortcut with zero chance of conflicts.
 
-To also save from a shortcut, create a second one without `--restore`.
+To also save from a shortcut, create a second one using `-s` (or `-s work` for a named layout).
 
 ## How It Works
 
